@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/budemZhit/FocusFlow/back/calendar_service/iternal/router"
+	"github.com/budemZhit/focusflow_calendar_service/iternal/router"
 	"github.com/budemZhit/focusflow_common/logger"
 )
 

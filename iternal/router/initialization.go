@@ -4,9 +4,9 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/budemZhit/focusflow_calendar_service/iternal/handler"
 	commonmw "github.com/budemZhit/focusflow_common/middleware"
 
-	"github.com/budemZhit/FocusFlow/back/calendar_service/iternal/handler"
 	"github.com/go-chi/chi"
 )
 

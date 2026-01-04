@@ -1,4 +1,4 @@
-module github.com/budemZhit/FocusFlow/back/calendar_service
+module github.com/budemZhit/focusflow_calendar_service
 
 go 1.23.4
 
