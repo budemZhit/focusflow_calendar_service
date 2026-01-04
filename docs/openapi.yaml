@@ -1,0 +1,189 @@
+openapi: 3.0.3
+info:
+  title: Calendar Service API
+  version: 1.0.0
+
+paths:
+
+  /calendar/month:
+    get:
+      summary: Get calendar month view
+      description: |
+        Возвращает календарную сетку месяца в виде массива дней.
+        Каждый элемент содержит позицию в сетке (1–42), номер дня месяца
+        и массив events, где:
+          - первый элемент — ID типа дня
+          - последующие элементы — ID событий
+      tags:
+        - Calendar
+      parameters:
+        - in: query
+          name: calendar_id
+          required: true
+          schema:
+            type: integer
+          example: 1
+        - in: query
+          name: year
+          required: true
+          schema:
+            type: integer
+          example: 2025
+        - in: query
+          name: month
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+          example: 2
+      responses:
+        '200':
+          description: Calendar month data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarMonthResponse'
+              examples:
+                sample:
+                  summary: Пример календаря за февраль 2025
+                  value:
+                    calendar_id: 1
+                    year: 2025
+                    month: 2
+                    days:
+                      - position: 9
+                        day: 1
+                        events: [1, 9]
+                      - position: 10
+                        day: 2
+                        events: [1]
+                      - position: 11
+                        day: 3
+                        events: [1]
+
+  /calendar/events:
+    get:
+      summary: Get event categories for calendar
+      description: |
+        Возвращает список категорий событий для указанного календаря.
+        Каждая категория содержит числовой ID, строковый ключ, название и индекс цвета.
+      tags:
+        - Calendar
+      parameters:
+        - in: query
+          name: calendar_id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: List of event categories
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarEventsResponse'
+              examples:
+                sample:
+                  summary: Пример категорий событий
+                  value:
+                    categories:
+                      - id: 1
+                        key: "job"
+                        name: "Рабочие"
+                        color: 0
+                      - id: 2
+                        key: "week"
+                        name: "Выходные"
+                        color: 1
+                      - id: 3
+                        key: "holiday"
+                        name: "Праздники"
+                        color: 2
+                      - id: 4
+                        key: "study"
+                        name: "Учёба"
+                        color: 3
+
+components:
+  schemas:
+
+    CalendarMonthResponse:
+      type: object
+      properties:
+        calendar_id:
+          type: integer
+          example: 1
+        year:
+          type: integer
+          example: 2025
+        month:
+          type: integer
+          example: 2
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/CalendarDay'
+      required:
+        - calendar_id
+        - year
+        - month
+        - days
+
+    CalendarDay:
+      type: object
+      properties:
+        position:
+          type: integer
+          description: Позиция в календарной сетке (1–42)
+          example: 9
+        day:
+          type: integer
+          nullable: true
+          description: Номер дня месяца (1–31). Может быть null для пустых ячеек.
+          example: 1
+        events:
+          type: array
+          description: |
+            Массив чисел:
+              - первый элемент — ID типа дня
+              - последующие элементы — ID событий
+          items:
+            type: integer
+          example: [1, 9]
+      required:
+        - position
+        - day
+        - events
+
+    CalendarEventsResponse:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventCategory'
+      required:
+        - categories
+
+    EventCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        key:
+          type: string
+          example: "job"
+        name:
+          type: string
+          example: "Рабочие"
+        color:
+          type: integer
+          example: 0
+      required:
+        - id
+        - key
+        - name
+        - color

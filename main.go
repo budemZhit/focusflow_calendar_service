@@ -1,5 +1,12 @@
 package main
 
-func main() {
+import (
+	"github.com/budemZhit/FocusFlow/back/calendar_service/iternal/router"
+	"github.com/budemZhit/focusflow_common/logger"
+)
 
+func main() {
+	log := logger.Init("calendar_service", "debug")
+	r := router.InitRouter(log)
+	_ = r
 }

@@ -1,0 +1,64 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "key": "job",
+      "name": "Рабочие",
+      "color": 0
+    },
+    {
+      "id": 2,
+      "key": "week",
+      "name": "Выходные",
+      "color": 1
+    },
+    {
+      "id": 3,
+      "key": "holiday",
+      "name": "Праздники",
+      "color": 2
+    },
+    {
+      "id": 4,
+      "key": "study",
+      "name": "Учёба",
+      "color": 3
+    },
+    {
+      "id": 5,
+      "key": "sport",
+      "name": "Спорт",
+      "color": 4
+    },
+    {
+      "id": 6,
+      "key": "family",
+      "name": "Семья",
+      "color": 5
+    },
+    {
+      "id": 7,
+      "key": "health",
+      "name": "Здоровье",
+      "color": 6
+    },
+    {
+      "id": 8,
+      "key": "travel",
+      "name": "Путешествия",
+      "color": 7
+    },
+    {
+      "id": 9,
+      "key": "girl_job",
+      "name": "Викины работы",
+      "color": 8
+    },
+    {
+      "id": 10,
+      "key": "girl_week",
+      "name": "Викины отдыхи",
+      "color": 9
+    }
+  ]
+}
