@@ -35,11 +35,11 @@ jobs:
           echo "TAG_SHA=${{ github.sha }}" >> $GITHUB_OUTPUT
 
       - name: Normalize image name
-        run: echo "IMAGE_LC=$(echo '${{ steps.meta.outputs.IMAGE }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
-      - name: Export normalized image name
         id: normalize
-        run: echo "image_lc=${IMAGE_LC}" >> $GITHUB_OUTPUT
+        run: |
+          IMAGE_LC=$(echo '${{ steps.meta.outputs.IMAGE }}' | tr '[:upper:]' '[:lower:]')
+          echo "image_lc=$IMAGE_LC" >> $GITHUB_OUTPUT
+        
 
       - name: Build Docker image
         run: docker build -t ${{ env.IMAGE_LC }}:${{ steps.meta.outputs.TAG_SHA }} .
