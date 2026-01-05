@@ -15,7 +15,7 @@ jobs:
 
     outputs:
       image: ${{ steps.normalize.outputs.image_lc }}
-      tag_sha: ${{ steps.meta.outputs.TAG_SHA }}
+      tag_sha: ${{ steps.meta.outputs.tag_sha }}
 
     steps:
       - name: Checkout
@@ -34,21 +34,21 @@ jobs:
           OWNER: ${{ github.repository_owner }} 
           SHA: ${{ github.sha }}
         run: |
-          echo "IMAGE=ghcr.io/${OWNER}/focusflow_calendar" >> $GITHUB_OUTPUT
-          echo "TAG_SHA=${SHA}" >> $GITHUB_OUTPUT
+          echo "image=ghcr.io/${OWNER}/focusflow_calendar" >> $GITHUB_OUTPUT
+          echo "tag_sha=${SHA}" >> $GITHUB_OUTPUT
 
       - name: Normalize image name
         id: normalize
         run: |
-          IMAGE_LC=$(echo '${{ steps.meta.outputs.IMAGE }}' | tr '[:upper:]' '[:lower:]')
+          IMAGE_LC=$(echo '${{ steps.meta.outputs.image }}' | tr '[:upper:]' '[:lower:]')
           echo "image_lc=$IMAGE_LC" >> $GITHUB_OUTPUT
         
 
       - name: Build Docker image
-        run: docker build -t ${{ steps.normalize.outputs.image_lc }}:${{ steps.meta.outputs.TAG_SHA }} .
+        run: docker build -t ${{ steps.normalize.outputs.image_lc }}:${{ steps.meta.outputs.tag_sha }} .
 
       - name: Push SHA tag
-        run: docker push ${{ steps.normalize.outputs.image_lc }}:${{ steps.meta.outputs.TAG_SHA }}
+        run: docker push ${{ steps.normalize.outputs.image_lc }}:${{ steps.meta.outputs.tag_sha }}
 
   deploy_release_server:
     name: Деплой на сервер
