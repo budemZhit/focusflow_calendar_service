@@ -63,20 +63,9 @@ jobs:
     needs: [build_and_push_docker, create_meta_data]
 
     steps:
-      - name: Debug deploy variables
-        run: |
-          echo "=== DEBUG DEPLOY ==="
-          echo "IMAGE = ${{ needs.create_meta_data.outputs.image }}"
-          echo "TAG = ${{ needs.create_meta_data.outputs.tag_sha }}"
-          echo "SERVER_RELEASE_HOST = ${{ secrets.SERVER_RELEASE_HOST }}"
-          echo "SERVER_RELEASE_USER = ${{ secrets.SERVER_RELEASE_USER }}"
-          echo "SERVER_RELEASE_PORT = ${{ secrets.SERVER_RELEASE_PORT }}"
-          echo "===================="
-
-
       - name: SSH deploy
         uses: appleboy/ssh-action@v1.0.1
-        with:
+        with: 
           host: ${{ secrets.SERVER_RELEASE_HOST }}
           username: ${{ secrets.SERVER_RELEASE_USER }}
           key: ${{ secrets.SERVER_RELEASE_SSH_KEY }}
