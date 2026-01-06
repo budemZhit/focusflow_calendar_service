@@ -9,13 +9,34 @@ on:
       - test
 
 jobs:
-  build_and_push_docker:
-    name: Сборка и публикация Docker образа
+  create_meta_data:
+    name: Создание мета-данных
     runs-on: ubuntu-latest
 
     outputs:
       image: ${{ steps.normalize.outputs.image_lc }}
-      tag_sha: ${{ steps.meta.outputs.tag_sha }}
+      tag_sha: ${{ steps.set_meta.outputs.tag_sha }}
+
+    steps:
+      - name: Set meta data
+        id: set_meta
+        env: 
+          OWNER: ${{ github.repository_owner }} 
+          SHA: ${{ github.sha }}
+        run: |
+          echo "image=ghcr.io/${OWNER}/focusflow_calendar" >> $GITHUB_OUTPUT
+          echo "tag_sha=${SHA}" >> $GITHUB_OUTPUT
+          
+      - name: Normalize image name
+        id: normalize
+        run: |
+          IMAGE_LC=$(echo '${{ steps.set_meta.outputs.image }}' | tr '[:upper:]' '[:lower:]')
+          echo "image_lc=$IMAGE_LC" >> $GITHUB_OUTPUT
+
+  build_and_push_docker:
+    name: Сборка и публикация Docker образа
+    runs-on: ubuntu-latest
+    needs: create_meta_data
 
     steps:
       - name: Checkout
@@ -28,32 +49,18 @@ jobs:
           username: ${{ secrets.GHCR_USER }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      - name: Meta (теги образа)
-        id: meta
-        env: 
-          OWNER: ${{ github.repository_owner }} 
-          SHA: ${{ github.sha }}
-        run: |
-          echo "image=ghcr.io/${OWNER}/focusflow_calendar" >> $GITHUB_OUTPUT
-          echo "tag_sha=${SHA}" >> $GITHUB_OUTPUT
-
-      - name: Normalize image name
-        id: normalize
-        run: |
-          IMAGE_LC=$(echo '${{ steps.meta.outputs.image }}' | tr '[:upper:]' '[:lower:]')
-          echo "image_lc=$IMAGE_LC" >> $GITHUB_OUTPUT
         
 
       - name: Build Docker image
-        run: docker build -t ${{ steps.normalize.outputs.image_lc }}:${{ steps.meta.outputs.tag_sha }} .
+        run: docker build -t ${{ needs.create_meta_data.outputs.image }}:${{ needs.create_meta_data.outputs.tag_sha }} .
 
       - name: Push SHA tag
-        run: docker push ${{ steps.normalize.outputs.image_lc }}:${{ steps.meta.outputs.tag_sha }}
+        run: docker push ${{ needs.create_meta_data.outputs.image }}:${{ needs.create_meta_data.outputs.tag_sha }}
 
   deploy_release_server:
     name: Деплой на сервер
     runs-on: ubuntu-latest
-    needs: build_and_push_docker
+    needs: [build_and_push_docker, create_meta_data]
 
     steps:
       - name: SSH deploy
@@ -67,8 +74,8 @@ jobs:
             echo "Login GHCR..."
             echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ secrets.GHCR_USER }} --password-stdin
 
-            IMAGE=${{ needs.build_and_push_docker.outputs.image }}
-            TAG=${{ needs.build_and_push_docker.outputs.tag_sha }}
+            IMAGE=${{ needs.create_meta_data.outputs.image }}
+            TAG=${{ needs.create_meta_data.outputs.tag_sha }}
 
             docker pull ${IMAGE}:${TAG}
 
